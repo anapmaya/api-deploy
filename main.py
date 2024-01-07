@@ -11,7 +11,7 @@ app = FastAPI()
 # Se cargan los dataset
 df_games = pd.read_parquet('steam_games.parquet')
 df_reviews = pd.read_parquet('user_reviews.parquet')
-df_items = pd.read_parquet('user_items.parquet')
+#df_items = pd.read_parquet('user_items.parquet')
 
 
 #@app.get('/')
@@ -20,7 +20,7 @@ df_items = pd.read_parquet('user_items.parquet')
     
 #    return {"message" : "Bienvenidos!"}
 
-
+"""
 @app.get('/PlayTimeGenre/{genero}')
 def PlayTimeGenre( genero : str ):
     """  Debe devolver el año con más horas jugadas para dicho género.
@@ -114,7 +114,7 @@ def UserForGenre( genero : str ):
         
             # Se retornan los valores en un diccionario: 
             return {clave_dicc : usuario_max, "Horas jugadas": horas_dicc1}
-
+"""
 
 @app.get('/UsersRecommend/{anio}')
 def UsersRecommend( anio : int ):
