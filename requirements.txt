@@ -1,0 +1,8 @@
+fastapi
+fastparquet
+numpy
+pandas
+pyarrow
+pydantic
+pydantic_core
+uvicorn
