@@ -11,7 +11,7 @@ app = FastAPI()
 # Se cargan los dataset
 df_games = pd.read_parquet('steam_games.parquet')
 df_reviews = pd.read_parquet('user_reviews.parquet')
-#df_items = pd.read_parquet('user_items.parquet')
+df_items = pd.read_parquet('user_items_mitad.parquet')
 
 
 #@app.get('/')
@@ -20,14 +20,14 @@ df_reviews = pd.read_parquet('user_reviews.parquet')
     
 #    return {"message" : "Bienvenidos!"}
 
-"""
+
 @app.get('/PlayTimeGenre/{genero}')
 def PlayTimeGenre( genero : str ):
-      Debe devolver el año con más horas jugadas para dicho género.
+    """  Debe devolver el año con más horas jugadas para dicho género.
 
 Ejemplo de retorno: 
 
-{"Año de lanzamiento con más horas jugadas para Género X" : 2013}
+{"Año de lanzamiento con más horas jugadas para Género X" : 2013}"""
 
     if genero not in df_games.columns:
         # Se imprime mensaje de error:   
@@ -62,12 +62,12 @@ Ejemplo de retorno:
 @app.get('/UserForGenre/{genero}')
 
 def UserForGenre( genero : str ):
-     Debe devolver el usuario que acumula más horas jugadas para el género dado y una 
+    """ Debe devolver el usuario que acumula más horas jugadas para el género dado y una 
     lista de la acumulación de horas jugadas por año.
    
    Ejemplo de retorno: 
    
-   {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf, "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]} 
+   {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf, "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]} """
 
     # Se imprime mensaje de error: 
     if genero not in df_games.columns:   
@@ -114,7 +114,7 @@ def UserForGenre( genero : str ):
         
             # Se retornan los valores en un diccionario: 
             return {clave_dicc : usuario_max, "Horas jugadas": horas_dicc1}
-"""
+
 
 @app.get('/UsersRecommend/{anio}')
 def UsersRecommend( anio : int ):
