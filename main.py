@@ -3,6 +3,10 @@ import gc
 import warnings
 warnings.filterwarnings('ignore')
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+from sklearn.metrics.pairwise import cosine_similarity
+
 from fastapi import FastAPI
 
 # Se instancia la app
@@ -11,7 +15,8 @@ app = FastAPI()
 # Se cargan los dataset
 df_games = pd.read_parquet('steam_games.parquet')
 df_reviews = pd.read_parquet('user_reviews.parquet')
-df_items = pd.read_parquet('user_items_mitad.parquet')
+df_items = pd.read_parquet('user_items.parquet')
+df_modelo = pd.read_parquet('dataset_ml.parquet')
 
 
 #@app.get('/')
@@ -267,3 +272,46 @@ Ejemplo de retorno:
 
         return {desarrollador:resultados}
     
+@app.get('/recomendacion_juego/{id}')
+def recomendacion_juego( id : float): 
+    
+    """ Ingresando el id de producto, deberíamos recibir una lista con 5 juegos 
+    recomendados similares al ingresado. """
+
+    #tomo un dataframe auxiliar sólo con las columnas reviews y item_id
+    df = df_modelo.drop(columns = 'item_name')
+    
+    #agrupo los reviews por juegos
+    df_modelo["review"] = df_modelo["review"].fillna("")
+    grouped = df.groupby('item_id').agg(lambda x: ' '.join(x)).reset_index()
+    
+    #Vectorización de términos mediante tf-idf, usando stop words en inglés
+    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english')
+
+    #Aplica el vectorizador tf-idf a la columna 'review' del dataframe agrupado
+    tfidf_matrix = tfidf_vectorizer.fit_transform(grouped['review'])
+
+    #Calcula la similitud del coseno entre las reseñas utilizando linear_kernel
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+    #busca el indice del item de entrada de la función
+    idx = grouped.index[grouped['item_id']== id].tolist()[0]
+
+    #Se crea una lista de tuples, donde cada tuple contiene el índice del artículo 
+    #y su puntaje de similitud de coseno con el artículo específico.
+    sim_scores = list(enumerate(cosine_sim[idx]))
+
+    # Se ordena descendente, de manera que las reseñas más similares aparezcan primero.
+    sim_scores = sorted(sim_scores, key = lambda x: x[1], reverse = True)
+
+    #selecciono las 5 primeras
+    sim_scores = sim_scores[1:6]
+    item_indices = [i[0] for i in sim_scores]
+    
+    #obtiene la lista de item_id correspondiente a los índices
+    salida_ids = grouped['item_id'].iloc[item_indices].tolist()
+
+    #obtiene la lista de nombres
+    salida_nombres = df_modelo.loc[df['item_id'].isin(salida_ids),'item_name'].unique().tolist()
+    
+    return salida_nombres

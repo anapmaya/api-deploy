@@ -6,3 +6,4 @@ pyarrow
 pydantic
 pydantic_core
 uvicorn
+scikit-learn
