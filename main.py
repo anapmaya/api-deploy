@@ -15,7 +15,7 @@ app = FastAPI()
 # Se cargan los dataset
 df_games = pd.read_parquet('steam_games.parquet')
 df_reviews = pd.read_parquet('user_reviews.parquet')
-df_items = pd.read_parquet('user_items.parquet')
+df_items = pd.read_parquet('user_items_mitad.parquet')
 df_modelo = pd.read_parquet('dataset_ml.parquet')
 
 
